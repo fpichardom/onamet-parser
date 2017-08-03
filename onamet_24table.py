@@ -1,16 +1,14 @@
 #!usr/bin/env python
 import datetime
-import pymongo
+from pymongo import MongoClient
 import requests
 
 
 def create_record(lista):
-    record = {
-        'estacion':lista[0],
-        'plataforma':lista[1],
-        'datetime': set_datetime(lista[2],lista[3])
-        'date':lista[2],
-        'time':lista[3],
+    p_record = {
+        'estacion':lista[0].strip(),
+        'plataforma':lista[1].strip(),
+        'datetime': set_datetime(lista[2].strip(), lista[3].strip()),
         'presion_atmosferica':float(lista[4]),
         'fuerza_viento':float(lista[5]),
         'direccion_viento':int(lista[6]),
@@ -18,12 +16,12 @@ def create_record(lista):
         'lluvia':float(lista[8]),
         'lluvia_24h':float(lista[9])
     }
-    return record
+    return p_record
 
 def set_datetime(date, time):
     date = [int(i) for i in date.split('-')]
     time = [int(i) for i in time.split(':')]
-    complete = datetime.datetime(date[0], date[1], date[2], time[0], time[1], time[2])
+    complete = datetime.datetime(date[2], date[1], date[0], time[0], time[1], time[2])
     return complete
 
 def parse_json(url):
@@ -31,10 +29,20 @@ def parse_json(url):
     json = request.json()
     return json
 
-if __name__ == "__main__":
-    json = parse_json("http://186.120.187.237/ema/join_data_24hrs.php")
-    records=[]
-    for item in json:
-        record = create_record(item)
-        record["utc_datetime"] = set_datetime
+def database_connection(uri, database, collection):
+    client = MongoClient(uri)
+    database = client[database]
+    collection = database['collection']
+    return collection
 
+if __name__ == "__main__":
+#records = [create_record(i) for i in json['aaData']]
+    URI = 'mongodb://localhost:27017/'
+    URL = 'http://186.120.187.237/ema/join_data_24hrs.php'
+    URI = 'mongodb://localhost:27017/'
+    DB = 'onamet'
+    COL = 'onehourClimate'
+    JSON = parse_json(URL)
+    CONN  =database_connection(URI, DB, COL)
+    for item in JSON['aaData']:
+        CONN.insert_one(create_record(item))
