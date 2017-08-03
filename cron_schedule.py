@@ -2,6 +2,17 @@
 
 from crontab import CronTab
 
+class CronManager:
+    def __init__(self):
+        self.cron = CronTab(user=True)
+    def hour_offset(self, command, offset=10, comment=None):
+        cron_job = self.cron.new(command=command, comment=comment)
+        cron_job.minute.on(offset)
+        cron_job.hour.during(0, 23)
+        self.cron.write()
+        for job in self.cron:
+            print(job)
+
 def set_cronuser(user):
     my_cron = CronTab(user=user)
     return my_cron
@@ -25,20 +36,5 @@ def update_cron(cron, identifier,timename='minute',time=1):
 
 
 if __name__ == '__main__':
-    """
-    CRON =set_cronuser('fritz')
-    ID = 'dateinfo'
-    update_cron(CRON,ID,'hour',1)
-    CRON.write()
-    for item in CRON:
-        print(item)
-    """
-    CRON = set_cronuser('fritz')
-    COMMAND = 'python $HOME/printdatetime.py'
-    COMMENT = 'dateinfo'
-    JOB = set_cron_job(CRON, COMMAND, COMMENT)
-    set_cron_time(JOB,'minute',10)
-    set_cron_time(JOB,'hour',1)
-    CRON.write()
-    for item in CRON:
-        print(item)
+    CRONIS = CronManager()
+    CRONIS.hour_offset('python $HOME/printdatetime.py', offset=10, comment="dateinfo")
