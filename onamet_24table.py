@@ -1,36 +1,40 @@
 #!usr/bin/env python
-
+import datetime
 import pymongo
-from bs4 import BeautifulSoup as bs
 import requests
 
-def get_table(url):
-    r = requests.get(url)
-    html_doc = r.content
-    soup = bs(html_doc, "html.parser")
-    table = soup.table
-    return soup
 
+def create_record(lista):
+    record = {
+        'estacion':lista[0],
+        'plataforma':lista[1],
+        'datetime': set_datetime(lista[2],lista[3])
+        'date':lista[2],
+        'time':lista[3],
+        'presion_atmosferica':float(lista[4]),
+        'fuerza_viento':float(lista[5]),
+        'direccion_viento':int(lista[6]),
+        'temperatura':float(lista[7]),
+        'lluvia':float(lista[8]),
+        'lluvia_24h':float(lista[9])
+    }
+    return record
 
-class Climate_data(object):
-    def __init__(self,
-                 estacion,
-                 plataforma,
-                 date_time,
-                 presion_atmosferica,
-                 fuerza_viento,
-                 direccion_viento,
-                 temperatura,
-                 lluvia,
-                 lluvia_24h):
-        self.estacion = estacion
-        self.plataforma = plataforma
-        self.date_time = date_time
-        self.presion_atmosferica = float(presion_atmosferica)
-        self.fuerza_viento = float(fuerza_viento)
-        self.direccion_viento = int(direccion_viento)
-        self.temperatura = float(temperatura)
-        self.lluvia = float(lluvia)
-        self.lluvia_24h = float(lluvia_24h)
+def set_datetime(date, time):
+    date = [int(i) for i in date.split('-')]
+    time = [int(i) for i in time.split(':')]
+    complete = datetime.datetime(date[0], date[1], date[2], time[0], time[1], time[2])
+    return complete
+
+def parse_json(url):
+    request = requests.get(url)
+    json = request.json()
+    return json
+
 if __name__ == "__main__":
-    soup = get_table("http://186.120.187.237/ema/index.html")
+    json = parse_json("http://186.120.187.237/ema/join_data_24hrs.php")
+    records=[]
+    for item in json:
+        record = create_record(item)
+        record["utc_datetime"] = set_datetime
+
