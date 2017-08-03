@@ -37,4 +37,5 @@ def update_cron(cron, identifier,timename='minute',time=1):
 
 if __name__ == '__main__':
     CRONIS = CronManager()
-    CRONIS.hour_offset('python $HOME/printdatetime.py', offset=10, comment="dateinfo")
+    COMMAND = 'python $HOME/python-apps/onamet-parser/onamet_24table.py'
+    CRONIS.hour_offset(COMMAD, comment="onamet24h")

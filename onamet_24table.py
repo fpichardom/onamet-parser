@@ -37,12 +37,11 @@ def database_connection(uri, database, collection):
 
 if __name__ == "__main__":
 #records = [create_record(i) for i in json['aaData']]
-    URI = 'mongodb://localhost:27017/'
+    URI = 'mongodb://174.138.41.192:27017/'
     URL = 'http://186.120.187.237/ema/join_data_24hrs.php'
-    URI = 'mongodb://localhost:27017/'
     DB = 'onamet'
     COL = 'onehourClimate'
     JSON = parse_json(URL)
-    CONN  =database_connection(URI, DB, COL)
+    CONN  = database_connection(URI, DB, COL)
     for item in JSON['aaData']:
         CONN.insert_one(create_record(item))
