@@ -40,7 +40,7 @@ if __name__ == "__main__":
     URI = 'mongodb://localhost:27017/'
     URL = 'http://186.120.187.237/ema/join_data_24hrs.php'
     DB = 'onamet'
-    COL = 'onehourClimate'
+    COL = 'onamet24h'
     try:
         JSON = parse_json(URL)
         CONN = database_connection(URI, DB, COL)
