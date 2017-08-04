@@ -2,7 +2,7 @@
 import datetime
 from pymongo import MongoClient
 import requests
-
+import os.path
 
 def create_record(lista):
     p_record = {
@@ -37,11 +37,18 @@ def database_connection(uri, database, collection):
 
 if __name__ == "__main__":
 #records = [create_record(i) for i in json['aaData']]
-    URI = 'mongodb://174.138.41.192:27017/'
+    URI = 'mongodb://localhost:27017/'
     URL = 'http://186.120.187.237/ema/join_data_24hrs.php'
     DB = 'onamet'
     COL = 'onehourClimate'
-    JSON = parse_json(URL)
-    CONN  = database_connection(URI, DB, COL)
-    for item in JSON['aaData']:
-        CONN.insert_one(create_record(item))
+    try:
+        JSON = parse_json(URL)
+        CONN = database_connection(URI, DB, COL)
+        for item in JSON['aaData']:
+            CONN.insert_one(create_record(item))
+        with open(os.path.join(os.path.expanduser('~'),'onamet24.log'), 'a') as outFile:
+            outFile.write('Records write success:' + str(datetime.datetime.utcnow())+'\n')
+    except:
+        with open(os.path.join(os.path.expanduser('~'),'onamet24.log')
+, 'a') as outFile:
+            outFile.write('Records write failure:' + str(datetime.datetime.utcnow())+'\n')
