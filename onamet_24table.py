@@ -32,7 +32,7 @@ def parse_json(url):
 def database_connection(uri, database, collection):
     client = MongoClient(uri)
     database = client[database]
-    collection = database['collection']
+    collection = database[collection]
     return collection
 
 if __name__ == "__main__":
